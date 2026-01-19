@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 /* 
 Output HEX:
 52E418CBB1BE494930203938162018B109FE
@@ -13,4 +15,13 @@ blocks to encode -- 16 bytes
 output -- each encrypted block, 128 bits, 16 bytes
  */
 
- 
+ // 4 functions, called in same order, except first and last round different. 
+
+
+ int main(void) {
+    float input;
+    
+    while (!feof(stdin)){
+        scanf(input);
+        printf(input);
+    }
