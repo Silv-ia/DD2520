@@ -5,14 +5,12 @@ import numpy as np
 # input = sys.stdin.read()
 input = "a8f9e7dc8b782f618ade628f7b7c83421829f9eba8e8d8c8b72a7f7e7d6c2b38"
 
-## maybe use array instead of list
+## input is a whole string, partitions into key and plaintext.
 key = input[:32] # list()
 plaintext = input[32:]
 # column-major. 
-# faster version of bitwise xor: '%x' % (int(a,16)^int(b,16))
-# test = '%x' % (int('af', 16)^int('34', 16))
-# print(test)
 
+# key and plaintext are both turned into lists, with two char per item, hex.
 key_hex = [key[i:i+2] for i in range(0, len(key), 2)]
 # print(key_hex)
 plain_hex = [plaintext[i:i+2] for i in range(0, len(plaintext), 2)]
@@ -79,7 +77,7 @@ def keySchedule(key):
         # print(key)
         
 
-    keys = []
+    # keys = []
     # s = str.join(key)
     # keys = [s[i:i+32] for i in range(0, len(s), 32)]
     return key
@@ -170,7 +168,7 @@ for blocks in range(0, len(plain_hex), 16):
     cipher = shiftRow(subBytes(cipher))
     # addRoundKey()
 
-
+    # concatenate all the cipher strings?
     #sys.stdout.write(cipher)
     print(cipher)
 

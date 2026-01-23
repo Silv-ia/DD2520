@@ -58,3 +58,7 @@ b = 'abcd'
 ### GPT: 
 '%x' -> '%02x'
 format, tuple
+
+# faster version of bitwise xor: '%x' % (int(a,16)^int(b,16))
+# test = '%x' % (int('af', 16)^int('34', 16))
+# print(test)
