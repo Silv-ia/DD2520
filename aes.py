@@ -15,6 +15,8 @@ key_hex = [key[i:i+2] for i in range(0, len(key), 2)]
 # print(key_hex)
 plain_hex = [plaintext[i:i+2] for i in range(0, len(plaintext), 2)]
 
+# state = [int(b, 16) for b in plaintext]
+
 ##### constants
 s_box = (
 #    0     1    2    3    4    5    6    7    8    9    a    b    c    d   e    f
@@ -128,8 +130,20 @@ def shiftRow(cipher):
 
     return cipher
 
-def mixColumn():
+def xtime(x):
     return 0
+
+
+## taken from "The Design of Rijndael - Joan Daemen, Vincent Rijman"
+def mixColumn(plaintext):
+
+    # each block is a single array -> column-major -> arr[0:3] is column 1
+    for i in range(0, 16, 4):
+        t = '%02x' % int(plaintext[i], 16) ^ int(plaintext[i+1], 16) ^ int(plaintext[i+2], 16) ^ int(plaintext[i+3], 16)
+        u = int(plaintext[i], 16)
+        plaintext[i] ^= xtime(plaintext[i] ^ plaintext[i+1]) ^ t
+        plaintext[i+1] ^= xtime()
+    
 
 def addRoundKey(roundkey, plaintext):
     cipher = list()
