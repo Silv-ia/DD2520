@@ -1,30 +1,7 @@
-## Take stdin
+## Input and output work! No TypeError
+# Wrong Answer.
+
 import sys
-import numpy as np
-
-# key = sys.stdin.buffer.read(16)
-# plaintext = sys.stdin.buffer.read()
-
-## input is a whole string, partitions into key and plaintext.
-# key = input[:32] # list()
-# plaintext = input[32:]
-# column-major. 
-
-# key_bytes = bytearray(key)
-# plain_bytes = bytearray(plaintext)
-key_bytes = bytearray.fromhex("F4C020A0A1F604FD343FAC6A7E6AE0F9")
-plain_bytes = bytearray.fromhex("F295B9318B994434D93D98A4E449AFD8")
-# print(key_bytes)
-# print(plain_bytes)
-
-# state = [int(b, 16) for b in plaintext]
-
-"""
-(a[0], a[4], a[8],  a[12],
- a[1], a[5], a[9],  a[13],
- a[2], a[6], a[10], a[14],
- a[3], a[7], a[11], a[15])
-"""
 
 ##### constants
 s_box = (
@@ -171,40 +148,54 @@ def addRoundKey(roundkey, state):
 
 ##### function calls
 
-round_keys = keySchedule(key_bytes)
-print(round_keys.hex())
-
-### if several blocks -> ECB (for loop)
-for blocks in range(0, len(plain_bytes), 16):
-    # print(blocks)
-    roundkey = round_keys[0:16]
-    plain = plain_bytes[blocks:blocks+16]
-    # print(plain.hex())
-    # print(roundkey.hex())
-
-### Round 1: 
-    state = addRoundKey(roundkey, plain)
-    # print(cipher)
-
-### 9 Rounds: loop
-
-    for i in range(9):
-        roundkey = round_keys[16+i*16:i*16+32]
+def main():
+    
+    key = sys.stdin.buffer.read(16)
+    plaintext = sys.stdin.buffer.read()
+    
+    ## input is a whole string, partitions into key and plaintext.
+    # key = input[:32] # list()
+    # plaintext = input[32:]
+    # column-major. 
+    
+    key_bytes = bytearray(key)
+    plain_bytes = bytearray(plaintext)
+    
+    round_keys = keySchedule(key_bytes)
+    print(round_keys.hex())
+    
+    ### if several blocks -> ECB (for loop)
+    for blocks in range(0, len(plain_bytes), 16):
+        # print(blocks)
+        roundkey = round_keys[0:16]
+        plain = plain_bytes[blocks:blocks+16]
+        # print(plain.hex())
         # print(roundkey.hex())
-        state = subBytes(state)
-        # print(state.hex())
-        state = shiftRow(state)
-        # print(state.hex())
-        state = mixColumn(state)
-        # print(state.hex())
-        state = addRoundKey(roundkey, state)
-
-### Final round:
-
-    cipher = addRoundKey(roundkey, shiftRow(subBytes(state)))
-
-    # concatenate all the cipher strings?
-    #sys.stdout.buffer.write(cipher)
-    print(cipher.hex())
-    # correct output: 52E418CBB1BE4949308B381691B109FE
-
+    
+    ### Round 1: 
+        state = addRoundKey(roundkey, plain)
+        # print(cipher)
+    
+    ### 9 Rounds: loop
+    
+        for i in range(9):
+            roundkey = round_keys[16+i*16:i*16+32]
+            # print(roundkey.hex())
+            state = subBytes(state)
+            # print(state.hex())
+            state = shiftRow(state)
+            # print(state.hex())
+            state = mixColumn(state)
+            # print(state.hex())
+            state = addRoundKey(roundkey, state)
+    
+    ### Final round:
+    
+        cipher = addRoundKey(roundkey, shiftRow(subBytes(state)))
+    
+        # concatenate all the cipher strings?
+        sys.stdout.buffer.write(cipher)
+       
+        
+if __name__ == "__main__":
+    main()

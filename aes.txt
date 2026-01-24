@@ -67,3 +67,7 @@ format, tuple
 # key_hex = [key[i:i+2] for i in range(0, len(key), 2)]
 # print(key_hex)
 # plain_hex = [plaintext[i:i+2] for i in range(0, len(plaintext), 2)]
+
+# x, row
+    # y, col
+    # acces the first and second letter for coordinates
