@@ -62,3 +62,8 @@ format, tuple
 # faster version of bitwise xor: '%x' % (int(a,16)^int(b,16))
 # test = '%x' % (int('af', 16)^int('34', 16))
 # print(test)
+
+# key and plaintext are both turned into lists, with two char per item, hex.
+# key_hex = [key[i:i+2] for i in range(0, len(key), 2)]
+# print(key_hex)
+# plain_hex = [plaintext[i:i+2] for i in range(0, len(plaintext), 2)]
