@@ -162,7 +162,7 @@ def main():
     plain_bytes = bytearray(plaintext)
     
     round_keys = keySchedule(key_bytes)
-    print(round_keys.hex())
+    # print(round_keys.hex())
     
     ### if several blocks -> ECB (for loop)
     for blocks in range(0, len(plain_bytes), 16):

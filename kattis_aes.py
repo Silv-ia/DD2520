@@ -1,34 +1,12 @@
-## Take stdin
+# read and write to stdin/out
 import sys
-import numpy as np
 
-# key = sys.stdin.buffer.read(16)
-# plaintext = sys.stdin.buffer.read()
+# byte-array. column-major
 
-## input is a whole string, partitions into key and plaintext.
-# key = input[:32] # list()
-# plaintext = input[32:]
-# column-major. 
-
-# key_bytes = bytearray(key)
-# plain_bytes = bytearray(plaintext)
-key_bytes = bytearray.fromhex("F4C020A0A1F604FD343FAC6A7E6AE0F9")
-plain_bytes = bytearray.fromhex("F295B9318B994434D93D98A4E449AFD8")
-# print(key_bytes)
-# print(plain_bytes)
-
-# state = [int(b, 16) for b in plaintext]
-
-"""
-(a[0], a[4], a[8],  a[12],
- a[1], a[5], a[9],  a[13],
- a[2], a[6], a[10], a[14],
- a[3], a[7], a[11], a[15])
-"""
-
+# ex index 11 -> 17.
 ##### constants
 s_box = (
-#    0     1    2    3    4    5    6    7    8    9    a    b    c    d   e    f
+#    0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
     0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
     0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
     0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC, 0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15,
@@ -48,40 +26,33 @@ s_box = (
 )
 
 
-
 r_con = (
     0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36
 )
 
-##### Key expansion -- checked 
-
+##### Key expansion 
 # calls rotWord and subBytes
+# input the cipher key.
 def keySchedule(key):
-    round = 0
+    # two indices, one for xor and one for rotword
     ind1 = 0
     ind2 = 12
     rind = 0
 
     for i in range(10):
-        round += 1
-        # print("Round: ", round)
-        # print(key.hex())
         key = rotWord(ind2, key)
         ind2 += 4
-        # print(key.hex())
         key = subBytesKey(ind2, key)
-        # print(key.hex())
 
-        # print(key[ind2])
-        # print(key[ind1])
-        # print("Round const:", r_con[rind])
+        # col nr '5' and col nr '1'
         key[ind2] ^= key[ind1] ^ r_con[rind]
         key[ind2+1] ^= key[ind1+1] 
         key[ind2+2] ^= key[ind1+2]
         key[ind2+3] ^= key[ind1+3]
-        # print(key.hex())
+
         ind1 += 4
         rind += 1
+        # xor previous column, with column-4
         for i in range(3):
             key.append(key[ind1] ^ key[ind2])
             key.append(key[ind1+1] ^ key[ind2+1])
@@ -89,31 +60,25 @@ def keySchedule(key):
             key.append(key[ind1+3] ^ key[ind2+3])
             ind1 += 4
             ind2 += 4
-        # print("Key after round: ", round)
-        # print(key.hex())
     return key
 
-# creates new column -- checked, okay
+# creates new column
 def rotWord(index, key):
-    # print(key.hex())
     
     key.append(key[index+1])
     key.append(key[index+2])
     key.append(key[index+3])
     key.append(key[index])
-    # print(key.hex())
 
     return key
 
-## checked ok
+# subs 
 def subBytesKey(index, key):
-    # print(key.hex())
 
     key[index] = s_box[key[index]]
     key[index+1] = s_box[key[index+1]]
     key[index+2] = s_box[key[index+2]]
     key[index+3] = s_box[key[index+3]]
-    # print(key.hex())
     
     return key
 
@@ -124,29 +89,32 @@ def subBytesKey(index, key):
 def subBytes(state):
     for i in range(len(state)):
         state[i] = s_box[state[i]]
-    # print(state.hex())
     return state
 
 def shiftRow(state):
     state[1],state[5], state[9], state[13] = state[5], state[9], state[13], state[1]
     state[2], state[6], state[10], state[14] = state[10], state[14], state[2], state[6]
     state[3], state[7], state[11], state[15] = state[15], state[3], state[7], state[11]
-    # print(state.hex())
 
     return state
 
-# multiplication by 2, shift left.
-# xor 0x1b to cut overflow
+# multiplication of 2 (shift left)
+# modulo reducing polynomial, in hex -> 0x1B. 
+# x^8+x^4+x^3+x+1
 def xtime(x):
-    # shift left is multiply by 2. check the MSB(?) if it is one or not, by & 1 and then this * 0x1B
-    # will determine if we do ^0x1B. finally, mask
     return ((x << 1) ^ (((x >> 7) & 1) * 0x1B)) & 0xFF
 
 
-## taken from "The Design of Rijndael - Joan Daemen, Vincent Rijman"
+# taken from "The Design of Rijndael - Joan Daemen, Vincent Rijman"
+# add/sub -> xor
+# + is xor
+# a = 2 * b0 ^ 3 * b1 ^ b2 ^ b3 -> matrix multiplication
+# code:
+# a = b0 ^ xtime(b0 ^ b1) ^ b0^b1^b2^b3
+# a = b0 ^ 2*b0^2*b1 ^ b0^b1^b2^b3
+# a = 2*b0 ^ 3*b1 ^ b2 ^ b3
 def mixColumn(state):
 
-    # each block is a single array -> column-major -> arr[0:3] is column 1
     for i in range(0, 16, 4):
         t = state[i] ^ state[i+1] ^ state[i+2] ^ state[i+3] 
         u =  state[i] 
@@ -154,62 +122,43 @@ def mixColumn(state):
         state[i+1] ^= xtime(state[i+1] ^ state[i+2]) ^ t
         state[i+2] ^= xtime(state[i+2] ^ state[i+3]) ^ t
         state[i+3] ^= xtime(state[i+3] ^ u) ^ t
-    # print(state.hex())
     return state
     
 
 def addRoundKey(roundkey, state):
-    # print("addRoundKey got:", type(state))
-    # print(len(roundkey))
-    # print(len(plaintext))
     for i in range(16):
-        # print(roundkey.hex())
-        # print(state[i])
         state[i] ^= roundkey[i]
-    # print(state.hex())
     return state
 
 
 #####
+def main():
+    
+    key = sys.stdin.buffer.read(16)
+    key_bytes = bytearray(key)
+    round_keys = keySchedule(key_bytes)
+    
+    while True:
+        
+        plaintext = sys.stdin.buffer.read(16)
+        if not plaintext:
+            break
+        else:
+            plain = bytearray(plaintext)
+            roundkey = round_keys[0:16]
+            # round 1:
+            state = addRoundKey(roundkey, plain)
+        
+            # 9 rounds: 
+            for i in range(9):
+                roundkey = round_keys[16+i*16:i*16+32]
+                state = addRoundKey(roundkey, mixColumn(shiftRow(subBytes(state))))
 
-##### function calls
-
-round_keys = keySchedule(key_bytes)
-# print(round_keys.hex())
-
-### if several blocks -> ECB (for loop)
-for blocks in range(0, len(plain_bytes), 16):
-    # print(blocks)
-    roundkey = round_keys[0:16]
-    plain = plain_bytes[blocks:blocks+16]
-    # print(plain.hex())
-    # print(roundkey.hex())
-
-### Round 1: 
-    state = addRoundKey(roundkey, plain)
-    # print(cipher)
-
-### 9 Rounds: loop
-
-    for i in range(9):
-        roundkey = round_keys[16+i*16:i*16+32]
-        # print(roundkey.hex())
-        state = subBytes(state)
-        # print(state.hex())
-        state = shiftRow(state)
-        # print(state.hex())
-        state = mixColumn(state)
-        # print(state.hex())
-        state = addRoundKey(roundkey, state)
-
-### Final round:
-    roundkey = round_keys[-16:]
-    # print(roundkey.hex())
-    # print(round_keys.hex())
-    cipher = addRoundKey(roundkey, shiftRow(subBytes(state)))
-
-    # concatenate all the cipher strings?
-    #sys.stdout.buffer.write(cipher)
-    print(cipher.hex())
-    # correct output: 52E418CBB1BE4949308B381691B109FE
-
+            # last round 
+            roundkey = round_keys[-16:]
+            cipher = addRoundKey(roundkey, shiftRow(subBytes(state)))
+            sys.stdout.buffer.write(cipher)
+            
+            
+if __name__ == "__main__":
+    main()
