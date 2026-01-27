@@ -3,7 +3,7 @@ import sys
 
 # byte-array. column-major
 
-# ex index 11 -> 17.
+# 16xrow+column
 ##### constants
 s_box = (
 #    0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
@@ -101,17 +101,17 @@ def shiftRow(state):
 # multiplication of 2 (shift left)
 # modulo reducing polynomial, in hex -> 0x1B. 
 # x^8+x^4+x^3+x+1
+# X, or X+1
 def xtime(x):
     return ((x << 1) ^ (((x >> 7) & 1) * 0x1B)) & 0xFF
 
 
-# taken from "The Design of Rijndael - Joan Daemen, Vincent Rijman"
-# add/sub -> xor
-# + is xor
+# taken from "The Design of Rijndael 4.1.1 and 4.1.2 - Joan Daemen, Vincent Rijman"
+# https://crypto.stackexchange.com/questions/2402/how-to-solve-mixcolumns
 # a = 2 * b0 ^ 3 * b1 ^ b2 ^ b3 -> matrix multiplication
 # code:
 # a = b0 ^ xtime(b0 ^ b1) ^ b0^b1^b2^b3
-# a = b0 ^ 2*b0^2*b1 ^ b0^b1^b2^b3
+# a = b0 ^ 2*b0^2*b1 ^ b0^b1^b2^b3 (2b1 ^ b1 = b1(2 ^ 1) = 3b1)
 # a = 2*b0 ^ 3*b1 ^ b2 ^ b3
 def mixColumn(state):
 
@@ -139,7 +139,7 @@ def main():
     round_keys = keySchedule(key_bytes)
     
     while True:
-        
+
         plaintext = sys.stdin.buffer.read(16)
         if not plaintext:
             break
