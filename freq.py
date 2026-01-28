@@ -46,7 +46,7 @@ freqEnglish = {'e': 0.12702, 't': 0.09056, 'a': 0.08167, 'o': 0.07507, 'i': 0.06
 ### plot the frequencies
 
 # sort cipher freq alphabet
-dict(sorted(cipherFrequency))
+cipherFrequency = dict(sorted(cipherFrequency))
 
 # x-axis, characters
 x_cipher = np.array(list(cipherFrequency.keys()))

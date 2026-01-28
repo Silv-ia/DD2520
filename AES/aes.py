@@ -1,3 +1,10 @@
+### Side Channel:
+# python: timing. computations, arithmetics (as mentioned in the book design of rijndael)
+# s-box access, cannot or difficult to make access time constant
+
+# read on python and cache
+
+
 ## Take stdin
 import sys
 import numpy as np
