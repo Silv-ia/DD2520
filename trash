@@ -1,0 +1,13 @@
+#pad = 0
+
+#if len(binary) % 3 > 0:
+    #pad = 3 - len(binary) % 3
+
+
+# temp = shift bytearray >> (bits - 6 times)
+# bits = len(bytearray)*8
+# output_str += base64_chars[temp]
+
+# rule of 4?
+
+# output = SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
