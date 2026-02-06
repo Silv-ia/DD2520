@@ -16,7 +16,6 @@ alphabet=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r
 
 def stream(cipher, key_len):
     streams = [""] * len(cipher)/key_len
-
     
 
 def offset(cipher):
