@@ -18,6 +18,7 @@ def stream(cipher, key_len):
     streams = [""] * len(cipher)/key_len
     
 
+# test all offsets and count matches. 
 def offset(cipher):
     n = len(cipher)
     counts = []
