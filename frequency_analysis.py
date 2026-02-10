@@ -4,12 +4,10 @@ from collections import Counter
 import operator
 import matplotlib.pyplot as plt
 
-cipherText = "oxmanaosnflsåwöwkdölsnajfksjdiskdlekfabcdefghijklmnopqrstuvwxyzl"
+cipherText = "pmaolylpzhufaopunavillujyfwalkaoludlzovbskuvailbzpunhjhlzhyjpwoly"
 
-cipher = Counter(cipherText)
+cipher = Counter(cipherText).most_common()
 print(cipher)
-
-print(cipher.keys())
 
 freqEnglish = {'e': 0.12702, 't': 0.09056, 'a': 0.08167, 'o': 0.07507, 'i': 0.06966, 'n': 0.06749, 
                's': 0.06327, 'h': 0.06094, 'r': 0.05987, 'd': 0.04253, 'l': 0.04025, 'c': 0.02782,
@@ -20,6 +18,30 @@ freqEnglish = {'e': 0.12702, 't': 0.09056, 'a': 0.08167, 'o': 0.07507, 'i': 0.06
 letters = list(freqEnglish.keys())
 frequencies = list(freqEnglish.values())
 
+cipher_letters = [obj[0] for obj in cipher]
+cipher_frequencies = [obj[1] for obj in cipher]
+
+fig, axes = plt.subplots(2, 1, figsize=(20, 4))
+
+axes[0].bar(letters, frequencies, color='skyblue')
+axes[0].set_title('English Standard Frequency', fontsize=10)
+axes[0].set_xlabel('Letters', fontsize=10)
+axes[0].set_ylabel('Frequency', fontsize=10)
+axes[0].grid(axis='y', alpha=0.3)
+
+# Plot 2: Vowels only (sorted)
+axes[1].bar(cipher_letters, cipher_frequencies, color='lightcoral')
+axes[1].set_title('Cipher Frequencies', fontsize=10)
+axes[1].set_xlabel('Letters', fontsize=10)
+axes[1].set_ylabel('Frequency', fontsize=10)
+axes[1].grid(axis='y', alpha=0.3)
+
+plt.tight_layout()  # Adjust spacing between subplots
+plt.show()
+
+
+
+"""
 plt.figure(figsize=(30, 4))
 plt.bar(letters, frequencies)  # Use letters as x-values directly
 plt.xticks(letters)  # Set the x-ticks to the letters
@@ -27,3 +49,4 @@ plt.xlabel('Letters')
 plt.ylabel('Frequency')
 plt.title('English Standard Frequency')
 plt.show()
+"""
