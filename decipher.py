@@ -17,10 +17,10 @@ def decrypt(key, cipher):
 def find_alph(a, b):
     return (alphabet[(alphabet.index(a) - alphabet.index(b)) % 26])
 
-print(decrypt(key, ci))
+# print(decrypt(15, ci))
 
 print(find_alph("t", "e"))
-print(find_alph("x", "t"))
-print(find_alph("u", "a"))
-print(find_alph("o", "o"))
-print(find_alph("i", "i"))
+print(find_alph("o", "t"))
+print(find_alph("l", "a"))
+print(find_alph("x", "o"))
+print(find_alph("u", "i"))

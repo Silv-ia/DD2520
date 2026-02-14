@@ -23,7 +23,7 @@ def stream(cipher, key_len):
     for c in cipher:
         streams[index] += c
         index = (index + 1) % key_len
-    print(streams)
+    # print(streams)
     return streams
     
 
@@ -33,7 +33,7 @@ def offset(cipher):
     counts = []
     
     # set the n to maximum key length, maybe 50?
-    for shift in range(1, 60):
+    for shift in range(1, 100):
         count = 0
 
         # cipher[i] is the shifted cipher
@@ -50,11 +50,16 @@ def offset(cipher):
     return counts
 
 def print_offset(counts):
-    plt.figure(figsize=(30, 4))
+    plt.figure(figsize=(50, 4))
     plt.bar(range(len(counts)), counts)
     plt.xticks(range(len(counts)))
 
     plt.show() 
+
+def freq(cipher):
+    cipher = Counter(cipher).most_common()
+    
+    return cipher
 
 
 def frequency(cipher):
@@ -103,22 +108,81 @@ def vig(keys, cipher):
     key_index = 0
 
     for c in cipher:
-        plaintext += alphabet[(alphabet.index(c)-alphabet.index(keys[key_index % 7])) % 26]
+        plaintext += alphabet[(alphabet.index(c)-alphabet.index(keys[key_index % 6])) % 26]
         key_index += 1
 
     return plaintext
 
-             
+def ic(stream):
+    counts = Counter(stream)
+    length = len(stream)
+    ic = 0.0
+
+    for c in counts:
+        ic += (counts[c] / length) * (counts[c] - 1) / (length - 1)
+
+    # print(ic)
+    return ic
+
+def find_alph(a, b):
+    return (alphabet[(alphabet.index(a) - alphabet.index(b)) % 26])
+
+        
 total_counts = offset(cipher)
 print_offset(total_counts)
 
-#streams = stream(cipher, 7)
+streams = stream(cipher, 26)
+coinc = 0
+for s in streams:
+    coinc += ic(s)
+    print("Average: ", coinc/len(streams))
 
-#frequency(streams[6])
 
-# 10 : 0, 21, 8, 5, 10, 4, 8, 6, 16/17, 11 : 
-# x, t, v, i, s
-#keys = "kasiski"
+for s in streams:
+    print(freq(s))
+    frequency(s)
+
+"""
+
+for i in range(2, 50, 1):
+    streams = stream(cipher, i)
+
+    print("Key Size:", i)
+
+    frequency(streams[0])
+    frequency(streams[1])
+
+
+key_sizes = [41, 37, 26, 46, 14, 49]
+
+print("IC of entire cipher: ", ic(cipher))
+
+streams = stream(cipher, 41)
+for s in streams:
+    print(freq(s))
+    frequency(s)
+
+
+
+for k in key_sizes:
+    streams = stream(cipher, k)
+    print("Key size: ", k)
+
+    for s in streams:
+        print("  key letter")
+        counts = freq(s)
+        print(find_alph(counts[0][0], "e"))
+        print(find_alph(counts[1][0], "t"))
+        print(find_alph(counts[2][0], "a"))
+        print(find_alph(counts[3][0], "o"))
+        print(find_alph(counts[4][0], "i"))
+
+"""
+# frequency(streams[6])
+
+
+
+keys = "semper"
 
 #print(vig(keys, cipher))
 
