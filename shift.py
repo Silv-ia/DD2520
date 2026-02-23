@@ -241,13 +241,13 @@ def print_di(digram, digraph):
     plt.show()
 
 
-
+total_counts = offset(cipher)
+print_offset(total_counts)
 keys = "semper"
 
 print(vig(keys, cipher))
 """
-total_counts = offset(cipher)
-print_offset(total_counts)
+
 
 digram = digram(cipher)
 print(dict(sorted(digram.items(), key=lambda item: item[1], reverse=True)))

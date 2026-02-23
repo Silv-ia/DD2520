@@ -252,13 +252,3 @@ for c in cipher:
     
 
 print(plaintext)
-    
-"""
-qhu - _at
-pxu - _nt
-xfu - ngt
-
-iuq - eth
-auq - rth
-nuq - dth
-"""
