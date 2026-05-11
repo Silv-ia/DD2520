@@ -5,4 +5,4 @@ Applied Cryptography.
 Fully implemented AES ECB in Python.
 
 #### Cryptanalysis
-Breaks Vigénère cipher + trigram/digram for monoalphabetic substitution cipher.
+Breaks Vigénère cipher + generate trigram/digram for monoalphabetic substitution cipher.
